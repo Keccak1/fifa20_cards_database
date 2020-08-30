@@ -1,0 +1,6 @@
+venv/
+.vs_code
+.ipynb_checkpoints/
+postgres/
+pgadmin/
+*.~lock.*

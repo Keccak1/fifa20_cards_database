@@ -1,0 +1,54 @@
+version: "3.5"
+
+services:
+  db:
+    container_name: postgres_container
+    image: "postgres:latest"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mcichock}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-student}
+      PGDATA: ${PGDATA:-/data/postgres}
+      POSTGRES_DB: ${PGDATA:-fifa}
+    volumes:
+      - ./postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-mcichock@student.agh.edu.pl}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-student}
+    volumes:
+      - ./pgadminpgadmin:/root/.pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+  datascience-notebook:
+    image: jupyter/datascience-notebook
+    ports:
+      - "8888:8888"
+    volumes:
+      - /home/marcin/db_project/jupyter:/home/jovyan/work
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    networks:
+      - postgres
+    depends_on:
+      - db
+    restart: unless-stopped
+    container_name:   datascience-notebook-container
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  jupyter:
+  postgres:
+  pgadmin:
